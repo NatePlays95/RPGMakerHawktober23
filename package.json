@@ -1,12 +1,12 @@
 {
-    "name": "",
+    "name": "Hawktober23",
     "main": "index.html",
     "js-flags": "--expose-gc",
     "window": {
         "title": "",
         "toolbar": false,
-        "width": 816,
-        "height": 624,
+        "width": 480,
+        "height": 432,
         "icon": "icon/icon.png"
     }
 }
