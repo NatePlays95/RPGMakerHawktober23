@@ -1,5 +1,3 @@
-
-
 Window.prototype._refreshPauseSign = function() {
     var sx = 144;
     var sy = 96;
@@ -22,10 +20,31 @@ Window.prototype._refreshPauseSign = function() {
 //     return 12;
 // };
 
+Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
+    this.drawIcon(iconIndex, textState.x, textState.y);
+    textState.x += 24;
+};
+
+Window_Base.prototype.drawItemName = function(item, x, y, width) {
+    width = width || 312;
+    if (item) {
+        var iconBoxWidth = Window_Base._iconWidth + 4;
+        this.resetTextColor();
+        this.drawIcon(item.iconIndex, x, y);
+        this.drawText(item.name, x + 24, y, width - 24);
+    }
+};
+
+Window_Base.prototype.drawActorIcons = function(actor, x, y, width) {
+    width = width || 144;
+    var icons = actor.allIcons().slice(0, Math.floor(width / Window_Base._iconWidth));
+    for (var i = 0; i < icons.length; i++) {
+        this.drawIcon(icons[i], x + 24 * i, y);
+    }
+};
+
 //CAUTION: WILL BREAK WITH MULTIPLE FONT SIZES IN ONE TEXT BOX.
 Window_Base.prototype.calcTextHeight = function(textState, all) {
-    
-    
     if (this.contents.sfont) {
         var lastSFontSize = this.contents.sfont.bitmap.height
         return this.contents.sfont.bitmap.height;
@@ -60,6 +79,10 @@ Window_Base.prototype.calcTextHeight = function(textState, all) {
     this.contents.fontSize = lastFontSize;
     return textHeight;
 };
+
+
+
+
 
 
 
