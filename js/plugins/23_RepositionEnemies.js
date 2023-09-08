@@ -17,7 +17,7 @@ Sprite_Enemy.prototype.setBattler = function(battler) {
 
     if (!this._enemy._movedScreenX) {
       this._homeX += (Graphics.boxWidth - 816) / 2;
-      this._homeX -= this._homeX%3 + 1;
+      this._homeX -= this._homeX%3;
       this._enemy._screenX = this._homeX;
       this._enemy._movedScreenX = true;
     }
