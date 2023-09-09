@@ -58,7 +58,7 @@
 	};
 
 	Window_BattleStatus.prototype.windowWidth = function() {
-	    return Graphics.boxWidth/4*this.maxItems()+this.standardPadding()*2;
+	    return Graphics.boxWidth;
 	};
 
 	Window_BattleStatus.prototype.windowHeight = function() {
