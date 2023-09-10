@@ -48,6 +48,7 @@ Sprite_Actor.prototype.update = function() {
 Scene_Battle.prototype.updateWindowPositions = function() {
     
     this._statusWindow.reposition();
+    this._actorWindow.reposition();
     this._actorWindow.x = this._statusWindow.x;
 
     if (!this._actorCommandWindow.active) {
@@ -55,8 +56,6 @@ Scene_Battle.prototype.updateWindowPositions = function() {
     } else {
         this._actorCommandWindow.y = this._actorCommandWindow.windowYPos();
     }
-
-    
 
     // var statusX = 0;
     // if (BattleManager.isInputting()) {
@@ -141,6 +140,7 @@ Window_BattleStatus.prototype.refresh = function() {
 Window_BattleStatus.prototype.reposition = function() {
     var partySize = $gameParty.battleMembers().length
     this.x = 0.5 * (Graphics.boxWidth - partySize*32*3);
+    this.width = partySize*32*3;
 };
 
 Window_BattleStatus.prototype.itemRect = function(index) {

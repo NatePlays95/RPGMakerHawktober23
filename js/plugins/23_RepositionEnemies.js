@@ -10,7 +10,7 @@ Sprite_Enemy.prototype.setBattler = function(battler) {
     if (!this._enemy._movedScreenY) {
       //this._homeY += Math.floor((Graphics.boxHeight - 624) / 2);
       //this._homeY -= this._homeY%3;
-      this._homeY = 240;
+      this._homeY = 192 + 24;
       this._enemy._screenY = this._homeY;
       this._enemy._movedScreenY = true;
     }
