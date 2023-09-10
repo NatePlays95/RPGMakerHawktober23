@@ -215,3 +215,44 @@ Window_BattleStatus.prototype.drawActorIconsBottom = function(actor, x, y, width
     }
     // console.log(actor.name(), icons, iconsPerLine);
 };
+
+
+
+
+
+
+//from YEP BattleCore, fix font centering bug
+Window_EnemyVisualSelect.prototype.updateWindowPosition = function() {
+    if (!this._battler) return;
+    this.x = -1 * this.width / 2;
+    this.y = -1 * this.height + this.standardPadding();
+    this.x += this._battler.spritePosX();
+    this.y += this._battler.spritePosY();
+    this.x = this.x.clamp(this._minX, this._maxX);
+    this.y = this.y.clamp(this._minY, this._maxY);
+  
+    this.x -= this.x%3;
+    this.y -= this.y%3;
+  };
+
+Window_EnemyVisualSelect.prototype.updateWindowSize = function() {
+    //var spriteWidth = this._battler.spriteWidth();
+    var spriteWidth = 16*9;
+    this.contents.fontSize = Yanfly.Param.BECEnemyFontSize;
+    if (this._nameTextWidth === undefined) {
+      this._nameTextWidth = this.textWidth(this._battler.name());
+    }
+    var textWidth = this._nameTextWidth;
+    textWidth += this.textPadding() * 2;
+    var width = Math.max(spriteWidth, textWidth) + this.standardPadding() * 2;
+    width = Math.ceil(width);
+    var height = this._battler.spriteHeight() + this.standardPadding() * 2;
+    height = Math.ceil(height);
+    height = Math.max(height, this.lineHeight() + this.standardPadding() * 2);
+    if (width === this.width && height === this.height) return;
+    this.width = width;
+    this.height = height;
+    this.createContents();
+    this._requestRefresh = true;
+    this.makeWindowBoundaries();
+};
