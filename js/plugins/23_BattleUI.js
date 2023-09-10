@@ -48,12 +48,15 @@ Sprite_Actor.prototype.update = function() {
 Scene_Battle.prototype.updateWindowPositions = function() {
     
     this._statusWindow.reposition();
+    this._actorWindow.x = this._statusWindow.x;
 
     if (!this._actorCommandWindow.active) {
         this._actorCommandWindow.y = Graphics.boxHeight;
     } else {
         this._actorCommandWindow.y = this._actorCommandWindow.windowYPos();
     }
+
+    
 
     // var statusX = 0;
     // if (BattleManager.isInputting()) {
@@ -96,8 +99,8 @@ Scene_Battle.prototype.createStatusWindow = function() {
 // };
 
 Window_BattleStatus.prototype.loadWindowskin = function() {
-    this.windowskin = ImageManager.loadSystem('WindowInvisible');
-}
+    this.windowskin = ImageManager.loadSystem('WindowBlack');
+};
 
 Window_BattleStatus.prototype.windowWidth = function() {  return Graphics.boxWidth; };
 
