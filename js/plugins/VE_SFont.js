@@ -643,7 +643,7 @@ VictorEngine.SFont = VictorEngine.SFont || {};
 	};
 	
 	Bitmap.prototype.changeSFont = function(index) {
-		this.sfont = VictorEngine.SFont.getSFont(i);
+		this.sfont = VictorEngine.SFont.getSFont(index);
 	};
 		
 	Bitmap.prototype.getPixelFast = function(imageData, x, y) {

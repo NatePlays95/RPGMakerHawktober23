@@ -2506,14 +2506,46 @@ Game_ActionResult.prototype.clear = function() {
 //-----------------------------------------------------------------------------
 
 if(!Imported.YEP_BattleEngineCore) {
+	var _Sprite_Battler_setBattler = Sprite_Battler.prototype.setBattler;
+	Sprite_Battler.prototype.setBattler = function(battler) {
+		_Sprite_Battler_setBattler.call(this, battler);
+		if(battler) battler._dpu_sprite = this;
+	};
+}
 
-var _Sprite_Battler_setBattler = Sprite_Battler.prototype.setBattler;
-Sprite_Battler.prototype.setBattler = function(battler) {
-	_Sprite_Battler_setBattler.call(this, battler);
-	if(battler) battler._dpu_sprite = this;
+Sprite_Battler.prototype.setupDamagePopup = function() {
+    if (this._battler.isDamagePopupRequested()) {
+      if (this._battler.isSpriteVisible()) {
+        var sprite = new Sprite_Damage();
+        sprite.x = this.x + this.damageOffsetX();
+        sprite.y = this.y + this.damageOffsetY();
+        sprite.setup(this._battler);
+        this.pushDamageSprite(sprite);
+
+		//NATE: add sprite to window
+        SceneManager._scene.addChild(sprite);
+		console.log("scene:", sprite.parent);
+
+        this._battler.clearResult();
+      }
+	  
+    } else {
+      this._battler.clearDamagePopup();
+    }
 };
 
-}
+Sprite_Battler.prototype.updateDamagePopup = function() {
+    this.setupDamagePopup();
+    if (this._damages.length > 0) {
+        for (var i = 0; i < this._damages.length; i++) {
+            this._damages[i].update();
+        }
+        if (!this._damages[0].isPlaying()) {
+            SceneManager._scene.removeChild(this._damages[0]);
+            this._damages.shift();
+        }
+    }
+};
 
 //-----------------------------------------------------------------------------
 // Sprite_Damage
@@ -2569,10 +2601,17 @@ Sprite_Damage.prototype.incrementDigits = function(x, y) {
 };
 
 Sprite_Damage.prototype.digitWidthFromBitmap = function(bitmap) {
+	if (bitmap.sfont) {
+		console.log("space",bitmap.sfont._space)
+		return bitmap.sfont._space;
+	}
 	return bitmap.measureTextWidth('0');
 };
 
 Sprite_Damage.prototype.digitHeightFromBitmap = function(bitmap) {
+	if (bitmap.sfont) {
+		return bitmap.sfont.bitmap.height;
+	}
 	return bitmap.fontSize;
 };
 
@@ -2580,10 +2619,18 @@ Sprite_Damage.prototype.createSpecial = function(index) {
 	var info = _.popups[index];
 	var bitmap = this.createChildBitmap(info, info.text.length);
 	var sprite = this.createChildSprite(bitmap);
+
+	// bitmap.changeSFont(0);//NATE
 	sprite.bitmap.drawText(info.text, 2, 0, bitmap.width, bitmap.height, 'left');
+
+
 	sprite.dy = 0;
 	sprite.x = eval(info.x);
 	sprite.y = eval(info.y);
+
+	sprite.x -= Math.floor(bitmap.width/2); sprite.y -= Math.floor(bitmap.height/2);
+	// sprite.x -= sprite.x%3 + 2; sprite.y -= sprite.y%3 + 2;
+
 	sprite.xBase = this._xOffsetSpecial;
 	sprite.yBase = this._yOffsetSpecial;
 	sprite.animations = info.animations.clone();
@@ -2599,10 +2646,18 @@ Sprite_Damage.prototype.createSpecialCustom = function(index) {
 	var info = _.customPops[index];
 	var bitmap = this.createChildBitmap(info, info.text.length);
 	var sprite = this.createChildSprite(bitmap);
+
+	// bitmap.changeSFont(0); //NATE
 	sprite.bitmap.drawText(info.text, 2, 0, bitmap.width, bitmap.height, 'left');
+
+
 	sprite.dy = 0;
 	sprite.x = eval(info.x);
 	sprite.y = eval(info.y);
+
+	sprite.x -= Math.floor(bitmap.width/2); sprite.y -= Math.floor(bitmap.height/2);
+	// sprite.x -= sprite.x%3 + 2; sprite.y -= sprite.y%3 + 2;
+
 	sprite.xBase = this._xOffsetSpecial;
 	sprite.yBase = this._yOffsetSpecial;
 	sprite.animations = info.animations.clone();
@@ -2623,13 +2678,23 @@ Sprite_Damage.prototype.createDigits = function(baseRow, value) {
 	var h = this.digitHeightFromBitmap(dummy);
 	for (var i = 0; i < string.length; i++) {
 		var bitmap = this.createChildBitmap(info);
-		bitmap.resize(bitmap.width + (bitmap.outlineWidth*2), bitmap.height)
+		bitmap.resize(bitmap.width, bitmap.height)
 		var sprite = this.createChildSprite(bitmap);
-		sprite.bitmap.drawText(string[i], 2, 0, w, h, 'left');
+
+
+		// bitmap.changeSFont(0); //NATE
+		sprite.bitmap.drawText(string[i], 0, 0, w, h, 'left');
+
+
 		sprite.xBase = this._xOffsetDigits;
 		sprite.yBase = this._yOffsetDigits;
-		sprite.x = ((i - (string.length - 1) / 2) * w) + eval(info.x);
+		//sprite.x = ((i - (string.length - 1) / 2) * w) + eval(info.x);
+		sprite.x = i * w + eval(info.x);
 		sprite.y = eval(info.y);
+
+		sprite.x -= Math.floor(bitmap.width/2); sprite.y -= Math.floor(bitmap.height/2);
+		// sprite.x -= sprite.x%3 + 2; sprite.y -= sprite.y%3 + 2;
+
 		sprite.ry = sprite.y;
 		sprite.dy = -i;
 		sprite.animations = info.animations.clone();
@@ -2647,14 +2712,15 @@ Sprite_Damage.prototype.createDigits = function(baseRow, value) {
 			sprite.flashColor = info.flashColor.clone();
 			sprite.flashDuration = info.flashDuration;
 		}
+		console.log("x: ", sprite.x)
 	}
 };
 
 Sprite_Damage.prototype.createChildSprite = function(bitmap) {
 	var sprite = new Sprite();
 	sprite.bitmap = bitmap;
-	sprite.anchor.x = 0.5;
-	sprite.anchor.y = 0.5;
+	sprite.anchor.x = 0;//0.5
+	sprite.anchor.y = 0;//0.5
 	this.addChild(sprite);
 	return sprite;
 };
@@ -2673,6 +2739,11 @@ Sprite_Damage.prototype.createChildBitmap = function(info, width, height) {
 	var w = this.digitWidthFromBitmap(bitmap) * width;
 	var h = this.digitHeightFromBitmap(bitmap) * height;
 	bitmap.resize(w + 20, h);
+
+	bitmap.fillRect(0,0,w + 20, h, "#555");
+
+	bitmap.changeSFont(11);
+
 	return bitmap;
 };
 

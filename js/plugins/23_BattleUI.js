@@ -6,6 +6,10 @@ Window_ActorCommand.prototype.windowWidth = function() {
     return 144;
 };
 
+Window_ActorCommand.prototype.windowYPos = function() {
+    return 168;
+};
+
 _23BattleUI_WindowActorCommand_initialize = Window_ActorCommand.prototype.initialize;
 Window_ActorCommand.prototype.initialize = function() {
     _23BattleUI_WindowActorCommand_initialize.call(this);
@@ -31,7 +35,26 @@ Window_ActorCommand.prototype.reposition = function() {
 //     this._actorCommandWindow.setup(BattleManager.actor());
 // };
 
+//sprites tied to window position
+_23BattleUI_Sprite_Actor_update = Sprite_Actor.prototype.update;
+Sprite_Actor.prototype.update = function() {
+    _23BattleUI_Sprite_Actor_update.call(this);
+    if (this._actor){
+        this.setActorHome(this._actor.index());
+    }
+    
+};
+
 Scene_Battle.prototype.updateWindowPositions = function() {
+    
+    this._statusWindow.reposition();
+
+    if (!this._actorCommandWindow.active) {
+        this._actorCommandWindow.y = Graphics.boxHeight;
+    } else {
+        this._actorCommandWindow.y = this._actorCommandWindow.windowYPos();
+    }
+
     // var statusX = 0;
     // if (BattleManager.isInputting()) {
     //     statusX = this._partyCommandWindow.width;
@@ -109,7 +132,6 @@ Window_BattleStatus.prototype.refresh = function() {
     console.log(this.windowWidth());
     // this.createContents();
     //this.contents.clear();
-    this.reposition();
     this.drawAllItems();
 };
 
