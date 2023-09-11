@@ -233,7 +233,7 @@ Window_EnemyVisualSelect.prototype.updateWindowPosition = function() {
   
     this.x -= this.x%3;
     this.y -= this.y%3;
-  };
+};
 
 Window_EnemyVisualSelect.prototype.updateWindowSize = function() {
     //var spriteWidth = this._battler.spriteWidth();
